@@ -26,14 +26,14 @@
 \newpage
 
 \section{Abstract}
-	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data in to a searchable string and then to store this data as a suffix tree for fast searching and analysis.  An interface would then be developed to enable the searching of these suffix trees and provide visualisation of the data.
+	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data in to a searchable string and then to store this data as a suffix tree for fast searching and analysis.  An interface will then be developed to enable the searching of these suffix trees and provide visualisation of the data.  The code should be re-usable in a project to receive live streaming data from many stations.
 	
 \section{Background}
 	Seismic waves are recorded as movement over three axis: vertical (hereafter referred to as \textbf{z}) alongside horizontal in terms of north-south(\textbf{n}) and east-west(\textbf{e}).
 	
-	Some words about SAX.
+	Some words about SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation).
 	
-	Some words about Suffix Trees.
+	Some words about Suffix Trees and the related infrastructure at Birkbeck.
 
 \section{Objectives}
 \begin{enumerate}
@@ -43,8 +43,22 @@
 \end{enumerate}
 
 \section{Approach}
+	As laid out in the objectives, the development will produce three separate components.
+	
+\subsection{Interpretation and Storage as time-series data}
+	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) binary format.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.
+	
+	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performant reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite.
+
+\subsection{Conversion of data to SAX and building of the Suffix Tree}
+
+\subsection{Development of an interface}
+	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
+	As both ObsPy and the existing infrastructure for Suffix Tree storage are written in Python, this seems the logical choice.  Specifically Python 3.5 will be used for all components.	
+	
+	Development will take the approach of Test Driven Development (TDD) where unit tests will be written at a class level before the classes are coded.
 
 
 \end{document}
