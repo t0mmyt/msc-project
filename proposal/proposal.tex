@@ -1,0 +1,50 @@
+\documentclass[11pt]{scrartcl}
+\title{An Infrastructure to Store and Analyse Seismic Data as Suffix Trees}
+\subtitle{MSc Data Analytics - Project Proposal}
+\date{April 2016}
+\author{Tom Taylor}
+
+\usepackage{graphicx}
+\graphicspath{ {img/} }
+\setlength{\parindent}{4em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+\maketitle
+\begin{itshape}
+	\noindent This report is substantially the result of my own work except where explicitly
+	indicated in the text. I give my permission for it to be submitted to the JISC
+	Plagiarism Detection Service. I have read and understood the sections on plagiarism
+	in the Programme Handbook and the College website.
+	
+	\noindent The report may be freely copied and distributed provided the source is explicitly
+	acknowledged.
+\end{itshape}
+
+\tableofcontents
+
+\newpage
+
+\section{Abstract}
+	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data in to a searchable string and then to store this data as a suffix tree for fast searching and analysis.  An interface would then be developed to enable the searching of these suffix trees and provide visualisation of the data.
+	
+\section{Background}
+	Seismic waves are recorded as movement over three axis: vertical (hereafter referred to as \textbf{z}) alongside horizontal in terms of north-south(\textbf{n}) and east-west(\textbf{e}).
+	
+	Some words about SAX.
+	
+	Some words about Suffix Trees.
+
+\section{Objectives}
+\begin{enumerate}
+	\item Interpretation of raw data from seismic stations and storage as time-series data in a time-series database such as OpenTSDB for easy access during conversion to SAX and for later rendering during interactions with the data.
+	\item Conversion of the data to SAX and storage in a suffix tree.
+	\item An interface for searching and viewing the raw data.
+\end{enumerate}
+
+\section{Approach}
+
+\section{Plan}
+
+
+\end{document}
