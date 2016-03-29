@@ -44,11 +44,29 @@
 	For the PAA, the data is first divided in to equal sized frames, then the mean deviation from zero of each frame is calculated.  An appropriate number of breakpoints symmetrical along the x-axis are created so that they follow a Gaussian distribution and a symbol assigned to each range between the breakpoints.  Then for each frame, a symbol is assigned based on which range the mean falls in to.  The symbols assigned to each frame are then concatenated in to a string and it is this string that gives the SAX representation of that data.  The width of the time frame and the number of discrete regions would be two parameters passed to this process alongside the data.
 	
 \subsection{Suffix Trees and the related infrastructure at Birkbeck}
+	Suffix trees are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string the trie is constructed using all of the suffixes of the given text \textbf{T} with a terminator character not used in the alphabet (\textbf{A}).  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before the string. In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} as a terminator.
+	\begin{verbatim}
+		T$:abaaba$: abaaba$
+		             baaba$      [ Diagram of constructed trie ]
+		              aaba$
+		               aba$
+		                ba$
+		                 a$
+		                  $
+	\end{verbatim}
+	
+	This allows for efficient searching and counting of substrings of T by following the trie from the root node.  Each substring (\textbf{S}) of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting of occurrences of the substring by counting the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(m^{2})$}.
+	
+	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within the tree.  This reduces the upper bound storage to \textit{$O(m)$} and results in a tree for our example \textbf{T} that looks as follows:
+	\begin{verbatim}
+		[ Diagram of Suffix Tree for T ]
+	\end{verbatim}
+	
 
 \section{Objectives}
 \begin{enumerate}
-	\item Interpretation of raw data from seismic stations and storage as time-series data in a time-series database such as OpenTSDB for easy access during conversion to SAX and for later rendering during interactions with the data.
-	\item Conversion of the data to SAX and storage in a suffix tree.
+	\item Interpretation of raw data from seismic stations (in either the SAC or miniseed format) and storage as time-series data in a time-series database for easy access during conversion to SAX and for later rendering during interactions with the data.
+	\item Conversion of the data to SAX and storage as a suffix tree.
 	\item An interface for searching and viewing the raw data.
 \end{enumerate}
 
@@ -58,9 +76,12 @@
 \subsection{Interpretation and Storage as time-series data}
 	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) binary format.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.
 	
-	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performant reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite.
+	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
 \subsection{Conversion of data to SAX and building of the Suffix Tree}
+	Once the raw data has been loaded to the time series database, it will be re-read in batches and passed though an algorithm to produce a SAX string as described in section 2.2.  There are a few challenges in making this string usable.  Firstly the seismic data will need to have noise removed and to be normalised across multiple stations.  Secondly the parameters of alphabet length and the size of the time window most suitable will need to be empirically found.
+	
+	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.
 
 \subsection{Development of an interface}
 	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
