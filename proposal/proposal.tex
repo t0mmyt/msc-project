@@ -57,11 +57,15 @@
 	
 	This allows for efficient searching and counting of substrings of T by following the trie from the root node.  Each substring (\textbf{S}) of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting of occurrences of the substring by counting the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(m^{2})$}.
 	
-	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within the tree.  This reduces the upper bound storage to \textit{$O(m)$} and results in a tree for our example \textbf{T} that looks as follows:
+	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within the tree.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(m)$} and results in a tree for our example \textbf{T} that looks as follows:
 	\begin{verbatim}
 		[ Diagram of Suffix Tree for T ]
 	\end{verbatim}
 	
+	This technique of building the tree is considered naive though as it is very resource hungry.  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.
+	\begin{verbatim}
+	(Some words about Martyns tooling and the BBK infra)
+	\end{verbatim}
 
 \section{Objectives}
 \begin{enumerate}
