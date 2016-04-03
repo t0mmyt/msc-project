@@ -61,46 +61,48 @@
 	
 	This allows for efficient searching and counting substrings of \textbf{T} by following the trie from the root node.  Each substring \textbf{S} of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting occurrences of the substring by finding the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
 	
-	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within T.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
+	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within \textbf{T}.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
 	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.5]{img/suffix_tree.png}
 		\caption{Example Suffix Tree (edges shown as text and as positions/offsets)}
 	\end{figure}
 	
-	This technique of building the tree is considered naive though as it is very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration adding a character.
+	This technique of building the tree is considered naive though as it is very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
 	
 	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees.  There is current research in progress to utilise external memory (in this case SSDs) to back the loaded Suffix Trees.  This would massively incraese the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationaly efficient due to its interpreted nature.
 
 \section{Objectives}
 \begin{enumerate}
-	\item Interpretation of raw data from seismic stations (in either the SAC or miniseed format) and storage as time-series data in a time-series database for easy access during conversion to SAX and for later rendering during interactions with the data.
-	\item Conversion of the data to SAX and storage as a suffix tree.
+	\item Interpretation of raw data from seismic stations (in either the SAC or miniseed format) and storage as time-series data in a time-series database.
+	\item Conversion of the data to SAX
+	\item Storage of the SAX representation as a loadable suffix tree.
 	\item An interface for searching and viewing the raw data.
 \end{enumerate}
 
 \section{Approach}
-	As laid out in the objectives, the development will produce three separate components.
+	As laid out in the objectives, the development will produce four separate components.
 	
 \subsection{Interpretation and Storage as time-series data}
-	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only however the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
+	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only.  However the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
 	
 	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
-\subsection{Conversion of data to SAX and building of the Suffix Tree}
-	Once the raw data has been loaded to the time series database, it will be re-read in batches and passed though an algorithm to produce a SAX string as described in section 2.2.  There are a few challenges in making this string usable.  Firstly the seismic data will need to have noise removed and to be normalised across multiple stations.  Secondly the parameters of alphabet length and the size of the time window most suitable will need to be empirically found.
+\subsection{Conversion of data to SAX}
+	Once the raw data has been loaded to the time series database, it will be re-read in batches and passed though an algorithm to produce a SAX string (as described in section 2.2).  There are a few challenges in making this string usable.  Firstly the seismic data will need to have noise removed and to be normalised across multiple stations.  Secondly the parameters of alphabet length and the size of the time window most suitable will need to be empirically found.
 	
-	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.
+\subsection{Storage as a Suffix Tree}
+	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.  The methodology will ultimately be influenced by the exposed API once the aforementioned refactor is complete.
 
 \subsection{Interface to query the data}
 	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
-	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written seperately act as micro services and be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to incraese portability for use in other projects.
+	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written seperately and act as micro services.  They will be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to incraese portability for use in other projects.
 
 	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature sand has been shown to work with the raw sample data.
 	
-	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock which effectively prevents multiple threads from running simulataneously.  This could have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play are R and Scala.
+	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock.  The GIL effectively prevents multiple threads from running simulataneously to avoid potentially non-thread-safe operations from conflicting with each other.  This will very likely have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play are R and Scala.
 	
 	Development will take the approach of Test Driven Development (TDD) where functional tests and class level unit tests will be written for each component and the test suite will be used within the build environment during development.
 	
