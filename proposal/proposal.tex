@@ -1,5 +1,5 @@
 \documentclass[11pt]{scrartcl}
-\title{An Infrastructure to Store and Analyse Seismic Data as Suffix Trees}
+\title{An Infrastructure to Store and Analyse Seismic Data as a Suffix Tree}
 \subtitle{MSc Data Analytics - Project Proposal}
 \date{April 2016}
 \author{Tom Taylor}
@@ -16,13 +16,9 @@
 \begin{document}
 \maketitle
 \begin{itshape}
-	\noindent This report is substantially the result of my own work except where explicitly
-	indicated in the text. I give my permission for it to be submitted to the JISC
-	Plagiarism Detection Service. I have read and understood the sections on plagiarism
-	in the Programme Handbook and the College website.
+	\noindent This report is substantially the result of my own work except where explicitly indicated in the text. I give my permission for it to be submitted to the JISC Plagiarism Detection Service. I have read and understood the sections on plagiarism in the programme Handbook and the College website.
 	
-	\noindent The report may be freely copied and distributed provided the source is explicitly
-	acknowledged.
+	\noindent The report may be freely copied and distributed provided the source is explicitly acknowledged.
 \end{itshape}
 
 \tableofcontents
@@ -47,15 +43,12 @@
 	
 \subsection{Suffix Trees and the related infrastructure at Birkbeck}
 	Suffix trees are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string the trie is constructed using all of the suffixes of the given text \textbf{T} with a terminator character not used in the alphabet (\textbf{A}).  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before the string. In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} as a terminator.
-	\begin{verbatim}
-		T$:abaaba$: abaaba$
-		             baaba$      [ Diagram of constructed trie ]
-		              aaba$
-		               aba$
-		                ba$
-		                 a$
-		                  $
-	\end{verbatim}
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{img/suffix_trie.png}
+		\caption{Example Suffix Trie}
+	\end{figure}
 	
 	This allows for efficient searching and counting of substrings of T by following the trie from the root node.  Each substring (\textbf{S}) of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting of occurrences of the substring by counting the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
 	
