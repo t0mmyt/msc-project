@@ -1,5 +1,5 @@
 \documentclass[11pt]{scrartcl}
-\title{An Infrastructure to Store and Analyse Seismic Data as a Suffix Tree}
+\title{An Infrastructure to Store and Analyse Seismic Data as Suffix Trees}
 \subtitle{MSc Data Analytics - Project Proposal}
 \date{April 2016}
 \author{Tom Taylor}
@@ -28,6 +28,13 @@
 \section{Abstract}
 	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data into a searchable string using SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation) and then to store this data as a suffix tree for fast searching and analysis.  An interface will then be developed to enable the searching of these suffix trees and provide visualisation of the data.  This enable the searching for similar patterns over time or between stations after an event.
 	
+	\noindent Potential applications of the software could be:
+	\begin{itemize}
+		\item Automatically finding events
+		\item Correlating events across multiple stations
+		\item Finding similar events at a given location at other times
+	\end{itemize}
+	
 	The code should ideally be re-usable where possible in a project to receive live streaming data from many stations.
 	
 \section{Background}
@@ -36,27 +43,33 @@
 	
 	A seismic station records movement over three axis: vertical (\textbf{z}) alongside horizontal in terms of north-south (\textbf{n}) and east-west (\textbf{e}).  Due to seismic velocities generally increasing with depth, P waves arrive at a seismic station close to the vertical axis.  As a result, P waves can be measured as a simple metric of displacement along the Z axis.  S waves follow similar ray paths, but have their particle motion perpendicular to the direction of propagation.  As a result, they manifest on a seismogram as movement on both the n and e axis. The geometry of the fault tends to have a bearing on the orientation of the displacement so the two axis of movement cannot be easily combined in to a single metric for time series analysis.
 	
+	\begin{verbatim}
+	[ Diagram showing PAA -> SAX on a time-series ]
+	\end{verbatim}
+	
 \subsection{Symbolic Aggregate Approximation (SAX)}
 	SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation) \citep{sax} is a technique where by a single dimension of a time series is reduced to a string of symbols for pattern matching.  The technique involves first transforming the normalised time-series in to a Piecewise Aggregate Approximation (\textbf{PAA}) which is then represented by a fixed number of symbols.
 	
 	For the PAA, the data is first divided into equal sized time frames, then the mean deviation from zero of each frame is calculated.  An appropriate number of breakpoints symmetrical along the x-axis are created so that they follow a Gaussian distribution and a symbol assigned to each range between the breakpoints.  Then for each frame, a symbol is assigned based on which range the mean falls in to.  The symbols assigned to each frame are then concatenated in to a string and it is this string that gives the SAX representation of that data.  The width of the time frame and the number of discrete regions would be two parameters passed to this process alongside the data.
 	
 \subsection{Suffix Trees and the related infrastructure at Birkbeck}
-	Suffix trees \citep{suffix} are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string \textbf{T}.  The trie is constructed using all of the suffixes \textbf{T} with a terminator character appended not used in the alphabet (\textbf{A}).  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before the string. In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} as a terminator.
+	Suffix trees \citep{suffix} are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string \textbf{T}.  The trie is constructed using all of the suffixes of \textbf{T} with a terminator character not used in the alphabet appended to the end of \textbf{T}.  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before that string (such as in \textit{as} before \textit{ash}). In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} applied as a terminator.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.5]{img/suffix_trie.png}
 		\caption{Example Suffix Trie}
 	\end{figure}
 	
-	This allows for efficient searching and counting of substrings of T by following the trie from the root node.  Each substring (\textbf{S}) of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting of occurrences of the substring by counting the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
+	This allows for efficient searching and counting substrings of \textbf{T} by following the trie from the root node.  Each substring \textbf{S} of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting occurrences of the substring by finding the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
 	
 	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within T.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
-	\begin{verbatim}
-		[ Include diagram of Suffix Tree for T ]
-	\end{verbatim}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{img/suffix_tree.png}
+		\caption{Example Suffix Tree (edges shown as text)}
+	\end{figure}
 	
-	This technique of building the tree is considered naive though as it is very resource hungry.  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.
+	This technique of building the tree is considered naive though as it is very inefficient.  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.
 	\begin{verbatim}
 	(Some words about Martyns tooling and the BBK infra)
 	\end{verbatim}
@@ -72,7 +85,7 @@
 	As laid out in the objectives, the development will produce three separate components.
 	
 \subsection{Interpretation and Storage as time-series data}
-	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) binary format.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.
+	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.
 	
 	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
@@ -81,13 +94,18 @@
 	
 	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.
 
-\subsection{Development of an interface}
+\subsection{Interface to query the data}
 	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
-	As both ObsPy and the existing infrastructure for Suffix Tree storage are written in Python, this seems the logical choice.  Specifically Python 3.5 will be used for all components.	
+	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written seperately act as micro services and be callable via a REST HTTP API to reduce any compatibility issues between any technologies used.
+
+	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature sand has been shown to work with the raw sample data.
 	
-	Development will take the approach of Test Driven Development (TDD) where unit tests will be written at a class level before the classes are coded.
+	One potential limitation for using Python is the multi-threading components for the cPython implementation as it relies on the concept of a Global Interpreter Lock which effectively prevents multiple threads from running simulataneously.  This could have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play are R and Scala.
+	
+	Development will take the approach of Test Driven Development (TDD) where functional tests and class level unit tests will be written for each component and the test suite will be used within the build environment during development.
+
 
 \bibliography{bibliography}
 
