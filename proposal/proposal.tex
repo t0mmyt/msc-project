@@ -26,7 +26,7 @@
 \newpage
 
 \section{Abstract}
-	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data into a searchable string using SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation) and then to store this data as a suffix tree for fast searching and analysis.  An interface will then be developed to enable the searching of these suffix trees and provide visualisation of the data.  This enable the searching for similar patterns over time or between stations after an event.
+	The purpose of this project is to develop an infrastructure and tool set for converting raw seismic time series data into a searchable string using SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation) and then to store this data as a suffix tree for fast searching and analysis.  An interface will then be developed to enable the searching of these suffix trees and provide visualisation of the data.  This will enable the searching for similar patterns over time or between stations after an event.
 	
 	\noindent Potential applications of the software could be:
 	\begin{itemize}
@@ -100,7 +100,7 @@
 \section{Plan}
 	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
 
-	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature sand has been shown to work with the raw sample data.
+	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature and has been shown to work with the raw sample data.
 	
 	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock.  The GIL effectively prevents multiple threads from running simultaneously to avoid potentially non-thread-safe operations from conflicting with each other.  This will very likely have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play to overcome this shortcoming are R and Scala.
 	
@@ -109,6 +109,8 @@
 	For training and initial validation of the usefulness of the software, some sample data based on research at the Nabro volcano in Eritrea will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
 	
 	Once a proof of concept is functioning, work will again be coordinated with the Department of Earth and Planetary Sciences to find suitable parameters for the normalisation of the seismic data and for the time frame and alphabet sizes for the SAX implementation.
+	
+	Where possible, alternative implementations of the data intensive tasks will also be compared and benchmarked for performance and accuracy.
 
 \bibliography{bibliography}
 
