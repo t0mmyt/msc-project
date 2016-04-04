@@ -30,7 +30,7 @@
 	
 	\noindent Potential applications of the software could be:
 	\begin{itemize}
-		\item Automatically finding events
+		\item Automatically finding the arrival times of events
 		\item Correlating events across multiple stations
 		\item Finding similar events at a given location at other times
 	\end{itemize}
@@ -68,9 +68,9 @@
 		\caption{Example Suffix Tree (edges shown as text and as positions/offsets)}
 	\end{figure}
 	
-	This technique of building the tree is considered naive though as it is very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
+	This technique of building the tree is considered naive though as it is again very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
 	
-	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees.  There is current research in progress to utilise external memory (in this case SSDs) to back the loaded Suffix Trees.  This would massively incraese the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationaly efficient due to its interpreted nature.
+	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees.  There is current research in progress to utilise external memory (in this case SSDs) to back the loaded Suffix Trees.  This would massively increase the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationally efficient due to its interpreted nature.
 
 \section{Objectives}
 \begin{enumerate}
@@ -98,16 +98,17 @@
 	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
-	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written seperately and act as micro services.  They will be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to incraese portability for use in other projects.
+	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
 
 	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature sand has been shown to work with the raw sample data.
 	
-	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock.  The GIL effectively prevents multiple threads from running simulataneously to avoid potentially non-thread-safe operations from conflicting with each other.  This will very likely have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play are R and Scala.
+	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock.  The GIL effectively prevents multiple threads from running simultaneously to avoid potentially non-thread-safe operations from conflicting with each other.  This will very likely have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play to overcome this shortcoming are R and Scala.
 	
 	Development will take the approach of Test Driven Development (TDD) where functional tests and class level unit tests will be written for each component and the test suite will be used within the build environment during development.
 	
-	Validation of the results found will be done with the assistance of the Geology department at Birkbeck to ensure that the results and searches are meaningful.
-
+	For training and initial validation of the usefulness of the software, some sample data based on research at the Nabro volcano in Eritrea will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
+	
+	Once a proof of concept is functioning, work will again be coordinated with the Department of Earth and Planetary Sciences to find suitable parameters for the normalisation of the seismic data and for the time frame and alphabet sizes for the SAX implementation.
 
 \bibliography{bibliography}
 
