@@ -106,13 +106,13 @@
 \section{Plan}
 	The various components (parsing, SAX, interface to the Suffix Tree infrastructure, Graphical Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
 
-	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature and has been shown to work with the raw sample data.
+	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is currently written in Python.  Also the Python library ObsPy is considered relatively mature and has been shown to work with the raw sample data.
 	
 	One potential limitation for using Python is the multi-threading components (for the cPython implementation at least) as it relies on the concept of a Global Interpreter Lock.  The GIL effectively prevents multiple threads from running simultaneously to avoid potentially non-thread-safe operations from conflicting with each other.  This will very likely have an impact on the speed of data analysis when working over large datasets so other languages may be considered.  Also the maturity of various libraries will be considered when making language choices over individual components.  Other languages that might come in to play to overcome this shortcoming are R and Scala.
 	
 	Development will take the approach of Test Driven Development (TDD) where functional tests and class level unit tests will be written for each component and the test suite will be used within the build environment during development.
 	
-	For training and initial validation of the usefulness of the software, some sample data based on research at the Nabro volcano in Eritrea during 2011 \citep{eritrea1}, \citep{eritrea2} will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
+	For training and initial validation of the effectiveness of the software, some sample data based on research at the Nabro volcano in Eritrea during 2011 \citep{eritrea1}, \citep{eritrea2} will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
 	
 	Once a proof of concept is functioning, work will again be coordinated with the Department of Earth and Planetary Sciences to find suitable parameters for the normalisation of the seismic data and for the time frame and alphabet sizes for the SAX implementation.
 	
