@@ -4,8 +4,11 @@
 \date{April 2016}
 \author{Tom Taylor}
 
-\usepackage[sort]{natbib}
-\usepackage{hyperref}
+\usepackage[sort]{natbib}      % references
+\usepackage[nottoc]{tocbibind} % bib om toc
+\usepackage{hyperref}          % clickable links
+\usepackage[all]{hypcap}       % for going to the top of an image when a figure reference is clicked
+\usepackage{cleveref}
 
 \usepackage{graphicx}
 \graphicspath{ {img/} }
@@ -45,31 +48,35 @@
 \subsection{Symbolic Aggregate Approximation (SAX)}
 	SAX (\textbf{S}ymbolic \textbf{A}ggregate appro\textbf{X}imation) \citep{sax} is a technique where by a single dimension of a time series is reduced to a string of symbols for pattern matching.  The technique involves first transforming the normalised time-series in to a Piecewise Aggregate Approximation (\textbf{PAA}) which is then represented by a fixed number of symbols.
 	
-	For the PAA, the data is first divided into equal sized time frames, then the mean deviation from zero of each frame is calculated.  An appropriate number of breakpoints symmetrical along the x-axis are created so that they follow a Gaussian distribution and a symbol assigned to each range between the breakpoints.  Then for each frame, a symbol is assigned based on which range the mean falls in to.  The symbols assigned to each frame are then concatenated in to a string and it is this string that gives the SAX representation of that data.  The width of the time frame and the number of discrete regions would be two parameters passed to this process alongside the data.
-	\begin{verbatim}
-		[ Diagram showing PAA -> SAX on a time-series ]
-	\end{verbatim}
-	
-\subsection{Suffix Trees and the related infrastructure at Birkbeck}
-	Suffix trees \citep{suffix} are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string \textbf{T}.  The trie is constructed using all of the suffixes of \textbf{T} with a terminator character not used in the alphabet appended to the end of \textbf{T}.  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before that string (such as in \textit{as} before \textit{ash}). In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} applied as a terminator.
+	For the PAA, the data is first divided into equal sized time frames (see diagram below), then the mean deviation from zero of each frame is calculated.  An appropriate number of breakpoints symmetrical along the x-axis are created so that they follow a Gaussian distribution and a symbol assigned to each range between the breakpoints.  Then for each frame, a symbol is assigned based on which range the mean falls in to.  The symbols assigned to each frame are then concatenated in to a string and it is this string that gives the SAX representation of that data.  The width of the time frame and the number of discrete regions would be two parameters passed to this process alongside the data.
 	\begin{figure}[h]
 		\centering
-		\includegraphics[scale=0.5]{img/suffix_trie.png}
+		\includegraphics[scale=0.5]{paa.png}
+		\includegraphics[scale=0.5]{sax.png}
+		\caption{Diagrams showing PAA to SAX on a time-series (taken from \cite{sax})}
+	\end{figure}
+	
+\subsection{Suffix Trees and the related infrastructure at Birkbeck}
+	Suffix trees \citep{suffix} are a representation of a string designed for performing search related algorithms.  They are based on a suffix trie of a given string \textbf{T}.  The trie is constructed using all of the suffixes of \textbf{T} with a terminator character not used in the alphabet appended to the end of \textbf{T}.  The terminator is deemed to be lexicographically of lower priority than all of the other characters to ensure that a prefix of a string would appear before that string (such as in \textit{as} before \textit{ash}).  In the following example, the suffixes of \textit{T: abaaba} would produce the following suffixes with \textbf{\$} applied as a terminator.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{suffix_trie.png}
 		\caption{Example Suffix Trie}
 	\end{figure}
 	
 	This allows for efficient searching and counting substrings of \textbf{T} by following the trie from the root node.  Each substring \textbf{S} of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting occurrences of the substring by finding the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
 	
-	A far more efficient way to store and query the trie is to store it as Suffix Trees.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within \textbf{T}.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
+	A far more efficient way to store and query the trie is to store it as Suffix Trees.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within \textbf{T}.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} as seen in \cref{fig:tree}.
 	\begin{figure}[h]
+		\label{fig:tree}
 		\centering
-		\includegraphics[scale=0.5]{img/suffix_tree.png}
+		\includegraphics[scale=0.5]{suffix_tree.png}
 		\caption{Example Suffix Tree (edges shown as text and as positions/offsets)}
 	\end{figure}
 	
-	This technique of building the tree is considered naive though as it is again very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
+	This technique of building the tree is considered naive though as it is again very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  It is far more desirable to achieve time-linear \textit{O(n)} construction of the tree.  An example of this is the Ukkonens Algorithm \citep{ukkonens}.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
 	
-	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees \citep{bbk-suffix}.  At a high level it is based on language models but should be extendable to time series by the use of SAX.  There is current work in progress to utilise external memory (in this case Solid State Drives) to back the loaded Suffix Trees.  This would massively increase the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationally efficient because of its interpreted nature.  The trees in this implementation are stored as k-truncated trees
+	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees \citep{bbk-suffix}.  At a high level it is based on language models but should be extendable to time series by the use of SAX.  There is current work in progress to utilise external memory (in this case Solid State Drives) to back the loaded Suffix Trees.  This would massively increase the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationally efficient because of its interpreted nature.  The trees in this implementation are stored as k-truncated trees for practical reasons.
 
 \section{Objectives}
 \begin{enumerate}
@@ -83,7 +90,7 @@
 	As laid out in the objectives, the development will produce four separate components.
 	
 \subsection{Interpretation and Storage as time-series data}
-	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can read both the headers and return the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only.  However the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
+	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can return both the headers and the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only.  However the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
 	
 	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
@@ -97,7 +104,7 @@
 	The interface to query and view the data will be web based so as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as (Grafana and Cubism.js) and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
-	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
+	The various components (parsing, SAX, interface to the Suffix Tree infrastructure, Graphical Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
 
 	Much of the coding is planned to be done in Python 3.  This is because the working prototype for the Suffix Tree infrastructure at Birkbeck is written in Python.  Also the Python library ObsPy is considered relatively mature and has been shown to work with the raw sample data.
 	
