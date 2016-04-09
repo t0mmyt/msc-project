@@ -4,9 +4,8 @@
 \date{April 2016}
 \author{Tom Taylor}
 
-\usepackage{natbib}
-\bibliographystyle{humannat}
-
+\usepackage[sort]{natbib}
+\usepackage{hyperref}
 
 \usepackage{graphicx}
 \graphicspath{ {img/} }
@@ -61,7 +60,7 @@
 	
 	This allows for efficient searching and counting substrings of \textbf{T} by following the trie from the root node.  Each substring \textbf{S} of \textbf{T} is a prefix of a path starting at the root.  It also allows for counting occurrences of the substring by finding the number of leaf nodes that can be reached from the end of the substring.  This format is not particularly space efficient as it has an upper bound storage in the order of \textit{$O(n^{2})$}.
 	
-	A far more efficient way to store and query the trie is to store it as a Suffix Tree.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within \textbf{T}.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
+	A far more efficient way to store and query the trie is to store it as Suffix Trees.  In order to produce a suffix tree from a trie, the non-branching nodes are firstly reduced (or coalesced) in to a single edge.  The original string \textbf{T} is then stored along side the tree and the labels further reduced to a starting position and offset within \textbf{T}.  The leaf nodes become labels to the offset of the suffix in the string.  This reduces the upper bound storage to \textit{$O(n)$} and results in a tree for our example \textbf{T} that looks as follows:
 	\begin{figure}[h]
 		\centering
 		\includegraphics[scale=0.5]{img/suffix_tree.png}
@@ -70,14 +69,14 @@
 	
 	This technique of building the tree is considered naive though as it is again very inefficient (being computationally in the order of \textit{$O(n^{3})$}).  A far more efficient way to build the tree is using the Ukkonens Algorithm \citep{ukkonens}.  This technique allows for a time-linear \textit{O(n)} construction of the tree.  The algorithm is too long for inclusion but effectively starts with the implicit suffix tree of a string of length 1 and conditionally extends the tree on each iteration of adding a character.
 	
-	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees.  There is current research in progress to utilise external memory (in this case SSDs) to back the loaded Suffix Trees.  This would massively increase the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationally efficient due to its interpreted nature.
+	At Birkbeck, an infrastructure has been developed to load and query Suffix Trees \citep{bbk-suffix}.  At a high level it is based on language models but should be extendable to time series by the use of SAX.  There is current work in progress to utilise external memory (in this case Solid State Drives) to back the loaded Suffix Trees.  This would massively increase the maximum size of a tree to be queryable.  The current libraries to utilise this are written in Python however there is currently a refactor happening to C due to Python not being particularly computationally efficient because of its interpreted nature.  The trees in this implementation are stored as k-truncated trees
 
 \section{Objectives}
 \begin{enumerate}
 	\item Interpretation of raw data from seismic stations (in either the SAC or miniseed format) and storage as time-series data in a time-series database.
-	\item Conversion of the data to SAX
-	\item Storage of the SAX representation as a loadable suffix tree.
-	\item An interface for searching and viewing the raw data.
+	\item Conversion of the time series data to SAX.
+	\item Storage and querying of the SAX representation as a loadable suffix tree using the existing infrastructure.
+	\item An interface for searching by SAX using Suffix trees and viewing the raw data.
 \end{enumerate}
 
 \section{Approach}
@@ -89,13 +88,13 @@
 	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
 \subsection{Conversion of data to SAX}
-	Once the raw data has been loaded to the time series database, it will be re-read in batches and passed though an algorithm to produce a SAX string (as described in section 2.2).  There are a few challenges in making this string usable.  Firstly the seismic data will need to have noise removed and to be normalised across multiple stations.  Secondly the parameters of alphabet length and the size of the time window most suitable will need to be empirically found.
+	Once the raw data has been loaded to the time series database, it will be re-read in batches and passed though an algorithm to produce a SAX string (as described in section 2.2).  There are a few challenges in making this string usable.  Firstly the seismic data will need to have noise removed and to be normalised across multiple stations.  Secondly the parameters of alphabet length and the size of the time window most suitable will need to be empirically found.  The SAX implementation itself should be generic so that it can be used for other time series data.
 	
 \subsection{Storage as a Suffix Tree}
 	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.  The methodology will ultimately be influenced by the exposed API once the aforementioned refactor is complete.
 
 \subsection{Interface to query the data}
-	The interface to query and view the data will be web based as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as Grafana and Cubism.js and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
+	The interface to query and view the data will be web based so as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as (Grafana and Cubism.js) and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
 	The various components (parsing, SAX, Suffix Trees, Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
@@ -106,12 +105,13 @@
 	
 	Development will take the approach of Test Driven Development (TDD) where functional tests and class level unit tests will be written for each component and the test suite will be used within the build environment during development.
 	
-	For training and initial validation of the usefulness of the software, some sample data based on research at the Nabro volcano in Eritrea will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
+	For training and initial validation of the usefulness of the software, some sample data based on research at the Nabro volcano in Eritrea during 2011 \citep{eritrea1}, \citep{eritrea2} will be provided by the Department of Earth and Planetary Sciences at Birkbeck.  Key events have already been manually picked from this data.  Further data will then be provided for test set validation.
 	
 	Once a proof of concept is functioning, work will again be coordinated with the Department of Earth and Planetary Sciences to find suitable parameters for the normalisation of the seismic data and for the time frame and alphabet sizes for the SAX implementation.
 	
 	Where possible, alternative implementations of the data intensive tasks will also be compared and benchmarked for performance and accuracy.
 
+\bibliographystyle{humannat}
 \bibliography{bibliography}
 
 \end{document}
