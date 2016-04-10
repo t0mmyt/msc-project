@@ -90,7 +90,7 @@
 	As laid out in the objectives, the development will produce four separate components.
 	
 \subsection{Interpretation and Storage as time-series data}
-	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can return both the headers and the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only.  However the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
+	The raw data received from the stations is accessed as files in the SAC (Seismic Analysis Code) or miniseed binary formats.  These will be read using the ObsPy python library which can return both the headers and the raw data as a Python object.  Due to the complexities in analysing S waves (section 2.1), the scope of the project will be initially limited for searching for P waves on the Z axis only.  However, the interface will still have access to the raw data for all three axis and be able to show all three together for analysis by a seismologist.
 	
 	This data will be batch processed and imported in to a time series database.  Initially OpenTSDB is being considered for performance reasons but there may be scope for this to change depending on how difficult it is to implement this on the Universities hardware.  Other options could be InfluxDB or Graphite which are considerably easier to implement but might suffer from scalability issues.
 
@@ -101,7 +101,7 @@
 	Once a suitable SAX string can be created across the dataset, it will be loaded in to a suffix tree using the toolset and infrastructure available at Birkbeck.  The methodology will ultimately be influenced by the exposed API once the aforementioned refactor is complete.
 
 \subsection{Interface to query the data}
-	The interface to query and view the data will be web based so as to ensure maximum compatibility with clients.  Many open source graph renderers are in existence such as (Grafana and Cubism.js) and components of both are likely to be used for viewing the raw seismic data alongside the SAX data.
+	The interface to query and view the data will be web based so as to ensure maximum compatibility with clients.  It will provide the ability to browse discovered events and search for similar patterns.  Many open source graph renderers are in existence (such as Grafana, Matplotlib and Cubism.js) and components of these are likely to be used for viewing the raw seismic data alongside the SAX data.
 
 \section{Plan}
 	The various components (parsing, SAX, interface to the Suffix Tree infrastructure, Graphical Interface, etc.) will all be written separately and act as micro services.  They will each be callable via a REST HTTP API to reduce any compatibility issues between any technologies used and to increase portability for use in other projects.
