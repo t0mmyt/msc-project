@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.5
-from observation import Observation, ObservationException
+from observation import Observation, ObservationError
 from os.path import join as path_join
 from os import walk
 from sys import exit
@@ -14,7 +14,7 @@ for root, dirs, files in walk(WORKDIR):
             path = (path_join(root, filename))
             try:
                 my_obs = Observation(path=path)
-            except ObservationException as e:
+            except ObservationError as e:
                 print("Error happened reading: {}".format(e))
                 exit(1)
 

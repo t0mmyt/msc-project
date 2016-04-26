@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.5
-from observation.exceptions import ObservationException
+from observation.exceptions import ObservationError
 from obspy import read as obs_read
 from logging import debug
 from decimal import Decimal     # To get around floating point inaccuracy
@@ -23,9 +23,9 @@ class Observation(object):
         if path:
             self.stream = self.read_from_disk(path)
             if not self.stream:
-                raise ObservationException('Could not read observation')
+                raise ObservationError('Could not read observation')
         else:
-            raise ObservationException(
+            raise ObservationError(
                     'No method to read stream, try passing a path')
 
     @staticmethod
@@ -42,7 +42,7 @@ class Observation(object):
         try:
             stream = obs_read(path)
         except (IOError) as e:
-            raise ObservationException('Failed to read {}: {}'.format(path, e))
+            raise ObservationError('Failed to read {}: {}'.format(path, e))
         return stream
 
     @property

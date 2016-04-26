@@ -1,4 +1,4 @@
-class ObservationException(Exception):
+class ObservationError(Exception):
     """
     Exception to contain all errors relating to loading the observations
     """
