@@ -80,7 +80,9 @@ class Observation(object):
             trace number to iterate through, default 0
         """
         trace = self.stream[tracenum]
-        return trace.stats
+        stats = trace.stats
+        stats['channel'] = stats['channel'][-1]
+        return stats
 
     def graphite_text(self, tracenum=0):
         """
@@ -100,7 +102,7 @@ class Observation(object):
         metric = '.'.join((
             trace.stats.network,
             trace.stats.station,
-            trace.stats.channel
+            trace.stats
         )).lower()
         for n in trace.data:
             yield "{} {} {}\n".format(metric, n, ts)
