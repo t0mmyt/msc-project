@@ -115,4 +115,4 @@ class OpenTSDB(object):
             v[j] = raw[i]
             j += 1
 
-        return t.astype(np.int), v
+        return t.astype(np.int).tolist(), v.tolist()
