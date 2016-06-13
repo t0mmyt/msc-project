@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Sax(object):
     gaussian_dist = {
          3:  [-0.43, 0.43],
@@ -38,4 +39,7 @@ class Sax(object):
         # Inefficient hack ... (strings are immutable!)
         for y in paa.values:
             self.sax_str += alphabet[np.searchsorted(self.breakpoints, y)]
-        print(self.sax_str)
+
+    @property
+    def string(self):
+        return self.sax_str
