@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from opentsdb import OpenTSDB
+from tsdatastore.opentsdb import OpenTSDB
 import cherrypy as cp
+from cherrypy import tools
 import json
 
 OPENTSDB = "172.16.1.90"
@@ -12,6 +13,8 @@ class TSDBHandler(object):
     def __init__(self, tsdb):
         self.tsdb = tsdb
 
+    @cp.tools.allow(methods=['GET'])
+    @tools.json_out()
     def GET(self, metric, start, end, **tags):
         query = tags
         query.update({
@@ -20,7 +23,17 @@ class TSDBHandler(object):
             "metric": metric,
         })
         t, v = tsdb.read(**query)
-        return json.dumps(dict(t=t, v=v))
+        return dict(t=t, v=v)
+
+
+class TSDBList(object):
+    def __init__(self, tsdb):
+        self.tsdb = tsdb
+
+    @cp.expose
+    @tools.json_out()
+    def index(self, metric, **tags):
+        return tsdb.lookup(metric=metric, **tags)
 
 
 if __name__ == '__main__':
@@ -33,6 +46,7 @@ if __name__ == '__main__':
             }
         }
     )
+    cp.tree.mount(TSDBList(tsdb), '/list')
 
     cp.server.socket_host = "0.0.0.0"
     cp.server.socket_port = 8010

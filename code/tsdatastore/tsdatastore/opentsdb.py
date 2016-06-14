@@ -116,3 +116,28 @@ class OpenTSDB(object):
             j += 1
 
         return t.astype(np.int).tolist(), v.tolist()
+
+    def lookup(self, metric, **tags):
+        """
+        Perform an API lookup on OpenTSDB.  Returns Parsed JSON.
+
+        Parameters
+        ----------
+        metric: string
+        tags: **dict
+            Use None for a wildcard
+        """
+        # TODO: exceptions!
+        def mangle(t):
+            for k, v in t.items():
+                v = v if v else '*'
+                yield {'key': k, 'value': v}
+        query = {
+            'metric': metric if metric else '*',
+            'tags': list(mangle(tags))
+        }
+        r = requests.post(
+            "http://{}:{}/api/search/lookup".format(self.host, self.port),
+            json=query
+        )
+        return(r.json())
