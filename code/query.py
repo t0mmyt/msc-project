@@ -3,9 +3,9 @@ from datastore import InfluxDB
 import cStringIO
 import numpy as np
 from sax import Paa, Sax
-import plotly
-from plotly.graph_objs import Scatter, Bar, Layout
-from obspy.signal.filter import highpass, lowpass
+# import plotly
+# from plotly.graph_objs import Scatter, Bar, Layout
+# from obspy.signal.filter import highpass, lowpass
 import matplotlib as mpl
 mpl.use('agg')
 from matplotlib import pyplot as plt
