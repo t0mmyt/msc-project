@@ -33,3 +33,22 @@ services:
       - /Users/tom/code/msc-project/code:/opt/code
     ports:
       - 8010:8010
+  render:
+    container_name: render
+    build: docker/render
+    image: t0mmyt/render
+    environment:
+      - TSDBAPI_HOST=tsdbapi
+      - TSDBAPI_PORT=8010
+    volumes:
+      - /Users/tom/code/msc-project/code:/opt/code
+    ports:
+      - 8002:8002
+  interface:
+    container_name: interface
+    build: docker/interface
+    image: t0mmyt/interface
+    volumes:
+      - /Users/tom/code/msc-project/code:/opt/code
+    ports:
+      - 8000:8000
