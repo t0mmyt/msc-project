@@ -10,10 +10,11 @@ import matplotlib as mpl
 mpl.use('agg')
 from matplotlib import pyplot as plt
 
-TSDB_API = ('172.16.1.2', 8010)
-
 
 class HTTPRender(object):
+    def __init__(self, tsdbapi):
+        self.tsdbapi = tsdbapi
+
     @cp.expose
     def raw(self, start, end, station, network):
         cp.response.headers['Content-Type'] = "image/png"
@@ -120,47 +121,8 @@ class HTTPRender(object):
         return ram.read()
 
     def _get(self, metric, **kwargs):
-        url = "http://{}:{}/{}".format(*TSDB_API, metric)
+        url = "http://{}:{}/{}".format(*self.tsdbapi, metric)
         r = requests.get(url, params=kwargs)
         if r.status_code != 200:
             return None
         return r.json()
-
-
-# class Plot(object):
-#     @staticmethod
-#     def align_yaxis(ax1, v1, ax2, v2):
-#         """
-#         Adjust ax2 ylimit so that v2 in ax2 is aligned to v1 in ax1
-#         taken from http://stackoverflow.com/a/26456731
-#         """
-#         _, y1 = ax1.transData.transform((0, v1))
-#         _, y2 = ax2.transData.transform((0, v2))
-#         Plot.adjust_yaxis(ax2, (y1 - y2) / 2, v2)
-#         Plot.adjust_yaxis(ax1, (y2 - y1) / 2, v1)
-#
-#     @staticmethod
-#     def adjust_yaxis(ax, ydif, v):
-#         """
-#         Shift axis ax by ydiff, maintaining point v at the same location
-#         taken from http://stackoverflow.com/a/26456731
-#         """
-#         inv = ax.transData.inverted()
-#         _, dy = inv.transform((0, 0)) - inv.transform((0, ydif))
-#         miny, maxy = ax.get_ylim()
-#         miny, maxy = miny - v, maxy - v
-#         if -miny > maxy or (-miny == maxy and dy > 0):
-#             nminy = miny
-#             nmaxy = miny*(maxy+dy)/(miny+dy)
-#         else:
-#             nmaxy = maxy
-#             nminy = maxy*(miny+dy)/(maxy+dy)
-#         ax.set_ylim(nminy+v, nmaxy+v)
-
-if __name__ == '__main__':
-    cp.tree.mount(HTTPRender(), '/')
-
-    cp.server.socket_host = "0.0.0.0"
-    cp.server.socket_port = 8001
-    cp.engine.start()
-    cp.engine.block()
