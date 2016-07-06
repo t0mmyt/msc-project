@@ -1,0 +1,35 @@
+---
+version: "2"
+
+services:
+  opentsdb:
+    container_name: opentsdb
+    image: petergrace/opentsdb-docker
+    environment:
+      - TSD_CONF_tsd__core__auto_create_metrics=True
+      - TSD_CONF_tsd__network__port=4242
+    ports:
+      - 4242:4242
+      - 2181:2181
+  observation:
+    container_name: observation
+    build: docker/obs
+    image: t0mmyt/obs
+    environment:
+      - OPENTSDB=opentsdb
+      - OBSAPI_LISTEN_PORT=8010
+    volumes:
+      - /Users/tom/code/msc-project/code:/opt/code
+    ports:
+      - 8001:8001
+  tsdbapi:
+    container_name: tsdbapi
+    build: docker/tsdbapi
+    image: t0mmyt/tsdbapi
+    environment:
+      - OPENTSDB=opentsdb
+      - TSDBAPI_LISTEN_PORT=8010
+    volumes:
+      - /Users/tom/code/msc-project/code:/opt/code
+    ports:
+      - 8010:8010
