@@ -9,4 +9,4 @@ RUN DEBIAN_FRONTEND=noninteractive \
     python3 python3-pip python3-numpy python3-scipy python3-matplotlib \
     python3-lxml python3-sqlalchemy python3-iso8601
 
-RUN pip3 install obspy cherrypy
+RUN pip3 install obspy cherrypy jinja2
