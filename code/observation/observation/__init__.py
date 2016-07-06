@@ -1,2 +1,2 @@
-from observation.main import Observation
+from observation.obs import Observation
 from observation.exceptions import ObservationError

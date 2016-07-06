@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.5
 from observation.exceptions import ObservationError
-from obspy import read as obs_read
+import obspy
 from logging import debug
 from decimal import Decimal     # To get around floating point inaccuracy
 from iso8601 import parse_date
@@ -40,7 +40,7 @@ class Observation(object):
         """
         debug('Attempting to open ({})'.format(path))
         try:
-            stream = obs_read(path)
+            stream = obspy.core.stream.read(path)
         except (IOError) as e:
             raise ObservationError('Failed to read {}: {}'.format(path, e))
         return stream
