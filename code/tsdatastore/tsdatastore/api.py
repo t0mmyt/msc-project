@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import cherrypy as cp
-# from cherrypy import tools
 
 from tsdatastore.opentsdb import OpenTSDB
 
@@ -23,7 +22,7 @@ class TSDBHandler(object):
             "end": float(end),
             "metric": metric,
         })
-        t, v = tsdb.read(**query)
+        t, v = self.tsdb.read(**query)
         return dict(t=t, v=v)
 
 
@@ -34,4 +33,4 @@ class TSDBList(object):
     @cp.expose
     @cp.tools.json_out()
     def index(self, metric, **tags):
-        return tsdb.lookup(metric=metric, **tags)
+        return self.tsdb.lookup(metric=metric, **tags)
