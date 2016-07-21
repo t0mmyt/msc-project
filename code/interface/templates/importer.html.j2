@@ -1,0 +1,28 @@
+    <div class="container">
+
+      <div class="starter-template">
+        <h1>Observation file upload</h1>
+        <p class="lead">
+        Use the input below to add SAC observation files.
+        </p>
+      </div>
+
+    </div><!-- /.container -->
+
+    <div class="container">
+      <div class="starter-template">
+        <form id="uploader" method="POST" enctype="multipart/form-data">
+          <fieldset class="form-group">
+            <label for="input_file">File input</label>
+            <input type="file" class="form-control-file" name="input_file" id="input_file" multiple>
+            <small class="text-muted">Multiple files can be selected.  There may be some delay if a large number of observations are laoded at once.</small>
+          </fieldset>
+          <fieldset class="form-group">
+            <input type="submit" value="Upload">
+          </fieldset>
+        </form>
+      </div>
+    </div>
+    {% if response|length > 0 -%}
+    <pre id="reponse">{{ response }}</pre>
+    {% endif %}
