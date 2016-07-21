@@ -27,5 +27,12 @@ class ObservationLoader(object):
                 timestamp=i[0],
                 network=meta['network'],
                 station=meta['station'])
-
-        return dict(status="ok")
+        meta_out=dict(
+            network=meta['network'],
+            station=meta['station'],
+            channel=meta['channel'],
+            start=str(meta['starttime']),
+            end=str(meta['endtime']),
+            sampling_rate=meta['sampling_rate'],
+        )
+        return dict(status="ok", meta=meta_out)
