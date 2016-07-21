@@ -16,7 +16,7 @@ class HTTPRender(object):
         self.tsdbapi = tsdbapi
 
     @cp.expose
-    def raw(self, start, end, station, network):
+    def raw(self, start, end, station, network, channel):
         cp.response.headers['Content-Type'] = "image/png"
 
         ts = self._get(
@@ -48,7 +48,7 @@ class HTTPRender(object):
 
     @cp.expose
     def sax(
-            self, start, end, station, network,
+            self, start, end, station, network, channel,
             interval=50, alphabet="abcdefghi", lp=1, hp=20):
         cp.response.headers['Content-Type'] = "image/png"
 
