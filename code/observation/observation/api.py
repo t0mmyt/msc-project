@@ -27,6 +27,7 @@ class ObservationLoader(object):
                 timestamp=i[0],
                 network=meta['network'],
                 station=meta['station'])
+        self.tsdb.close()
         meta_out=dict(
             network=meta['network'],
             station=meta['station'],

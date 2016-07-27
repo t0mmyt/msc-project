@@ -2,12 +2,13 @@ import math
 import requests
 import numpy as np
 
+requests.adapters.DEFAULT_RETRIES = 5
 
 class OpenTSDB(object):
     """
     Datastore for accessing OpenTSDB
     """
-    def __init__(self, host, port=4242, buffermax=20):
+    def __init__(self, host, port=4242, buffermax=50):
         """
         Esatiblish connection parameters for OpenTSDB (HTTP) interface.
 
