@@ -96,7 +96,10 @@ class GUI(object):
                     start=start.timestamp(),
                     end=end.timestamp()
                 )
-                content = "<img width=\"100%\" src=\"/render_raw?{}\">".format(urlencode(qry_params))
+                content = """<a href='/sax?{}'>
+                    <img width=\"100%\" src=\"/render_raw?{}\">
+                    </a>""".format(
+                    urlencode(params),urlencode(qry_params))
         nav = NavBar('nav_container.html.j2', self.menu)
         body_tmpl = env.get_template('explore.html.j2')
         return self.tmpl.render(
@@ -109,9 +112,51 @@ class GUI(object):
         )
 
     @cp.expose
-    def sax(self):
+    def sax(self, **params):
+        content = None
+        form_keys = ('network', 'station', 'channel', 'startD', 'endD',
+                     'startT', 'endT')
+        form_defaults = {
+            'paa_int': 50,
+            'alphabet': "abcdefg",
+        }
+        form = dict()
+        for k in form_keys:
+            form[k] = params[k] if k in params else ""
+        error = []
+        for k, v in form_defaults.items():
+            form[k] = params[k] if k in params else v
+
+        if all(key in params for key in form_keys):
+            print(json.dumps(params))
+            start = GUI.to_datetime(params['startD'], params['startT'])
+            end = GUI.to_datetime(params['endD'], params['endT'])
+            if not start:
+                error.append({'error': "Start date or time not understood"})
+            if not end:
+                error.append({'error': "End date or time not understood"})
+            if start and end:
+                qry_params = dict(
+                    network=form['network'],
+                    station=form['station'],
+                    channel=form['channel'],
+                    start=start.timestamp(),
+                    end=end.timestamp(),
+                    interval=int(form['paa_int']),
+                    alphabet=form['alphabet'],
+                )
+                content = "<img width=\"100%\" src=\"/render_sax?{}\">".format(urlencode(qry_params))
         nav = NavBar('nav_container.html.j2', self.menu)
-        return self.tmpl.render(navbar=nav.render(active='SAX'))
+        body_tmpl = env.get_template('sax.html.j2')
+        return self.tmpl.render(
+            navbar=nav.render(active='SAX'),
+            body=body_tmpl.render(
+                form=form,
+                content=content,
+                error=json.dumps(error, indent=2) if len(error) > 0 else None,
+            )
+        )
+
 
     @cp.expose
     def render_raw(self, **params):

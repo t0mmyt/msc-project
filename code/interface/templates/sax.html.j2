@@ -1,0 +1,120 @@
+<div class="container">
+  <div class="starter-template">
+    <h1>SAX</h1>
+    <p class="lead">
+      View SAX conversion with varying parameters
+    </p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="starter-template">
+    <form class="form-inline form-horizontal" id="explore" method="GET">
+    <div class="formgroup row">
+
+      <div class="col-md-2">
+        <fieldset class="form-group">
+            <label for="network">Network</label>
+            <select class="form-control" id="network" name=network style="width: 8em;" size=3>
+              <option value="YW" selected>YW</option>
+            </select>
+        </fieldset>
+      </div><!-- /col -->
+
+      <div class="col-md-2">
+        <fieldset class="form-group">
+            <label for="station">Station</label>
+            <select class="form-control" id="station" name="station" style="width: 8em;" size=3>
+              <option value="NAB1" selected>NAB1</option>
+              <option value="NAB2">NAB2</option>
+              <option value="NAB3">NAB3</option>
+              <option value="NAB4">NAB4</option>
+              <option value="NAB5">NAB5</option>
+              <option value="NAB6">NAB6</option>
+              <option value="NAB7">NAB7</option>
+              <option value="NAB8">NAB8</option>
+            </select>
+        </fieldset>
+      </div><!-- /col -->
+
+      <div class="col-md-2">
+        <fieldset class="form-group">
+            <label for="channel">Channel</label>
+            <select class="form-control" id="channel" name="channel" style="width: 8em;" size=3>
+              <option selected>Z</option>
+              <option>N</option>
+              <option>E</option>
+            </select>
+        </fieldset>
+      </div><!-- /col -->
+
+      <div class="col-md-2" style="text-align: right">
+        <fieldset class="form-group">
+          <label for="startD">Start Date</label>
+          <input type="text" id="startD" name="startD" placeholder="YYYY/MM/DD" value="{{ form.startD }}" style="width:8em;"><br>
+          <label for="endD">End Date</label>
+          <input type="text" id="endD" name="endD" placeholder="YYYY/MM/DD" value="{{ form.endD }}" style="width:8em;">
+        </fieldset>
+        <a href="#" id="CopyDate">Copy Date</a>
+        <script>
+        $('#CopyDate').click(function(e){
+          e.preventDefault();
+          $('#endD').val($('#startD').val())
+        })
+        </script>
+      </div><!-- /col -->
+
+      <div class="col-md-2" style="text-align: right">
+        <fieldset class="form-group">
+          <label for="startT">Start Time</label>
+          <input type="text" id="startT" name="startT" placeholder="HH:MM:SS" style="width:8em;" value="{{ form.startT }}"><br>
+          <label for="endT">End Time</label>
+          <input type="text" id="endT" name="endT" placeholder="HH:MM:SS" value="{{ form.endT }}" style="width:8em;">
+        </fieldset>
+        <a href="#" id="CopyTime">Copy Time</a>
+        <script>
+        $('#CopyTime').click(function(e){
+          e.preventDefault();
+          $('#endT').val($('#startT').val())
+        })
+        </script>
+      </div><!-- /col -->
+
+      <div class="col-md-2">
+        <fieldset class="form-group">
+          <input type="submit" id="submit" value="Submit" style="width: 20em;">
+        </fieldset>
+      </div><!-- /col -->
+
+    </div><!-- /row -->
+    <div class="formgroup row">
+      <div class="col-md-2">
+        <fieldset>
+          <label for="paa_int">PAA Interval (ms)</label>
+          <input type="text" value="{{ form.paa_int }}" id="paa_int" name="paa_int">
+        </fieldset>
+      </div><!-- /col -->
+      <div class="col-md-2">
+        <fieldset>
+          <label for="alphabet">Alphabet</label>
+          <input type="text" value="{{ form.alphabet }}" id="alphabet" name="alphabet">
+        </fieldset>
+      </div><!-- /col -->
+    </div><!-- /row -->
+  </form>
+</div><!-- /starter-template -->
+
+{% if error -%}
+<div class="container">
+  <pre style="border-color: #FF0000">{{ error }}</pre>
+</div>
+{% endif %}
+
+{% if content -%}
+<div>
+  <div class="starter-template">
+    {{ content }}
+  </div>
+</div>
+{% endif %}
+</div><!-- /container -->

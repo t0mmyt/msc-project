@@ -50,6 +50,7 @@ class HTTPRender(object):
     def sax(
             self, start, end, station, network, channel,
             interval=50, alphabet="abcdefghi", lp=1, hp=20):
+        interval = int(interval)
         cp.response.headers['Content-Type'] = "image/png"
 
         ts = self._get(
