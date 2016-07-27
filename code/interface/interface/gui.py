@@ -80,7 +80,8 @@ class GUI(object):
             form[k] = params[k] if k in params else ""
         error = []
 
-        if all(key in form_keys for key in params):
+        if all(key in params for key in form_keys):
+            print(json.dumps(params))
             start = GUI.to_datetime(params['startD'], params['startT'])
             end = GUI.to_datetime(params['endD'], params['endT'])
             if not start:
