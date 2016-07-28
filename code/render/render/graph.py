@@ -121,6 +121,33 @@ class HTTPRender(object):
         ram.seek(0)
         return ram.read()
 
+    # TODO - Move this to SAX API
+    @cp.expose
+    def saxstr(
+            self, start, end, station, network, channel,
+            interval=50, alphabet="abcdefghi", lp=1, hp=20):
+        interval = int(interval)
+        cp.response.headers['Content-Type'] = "text/plain"
+
+        ts = self._get(
+            metric='Z',
+            start=start,
+            end=end,
+            station=station,
+            network=network
+        )
+        t = np.array(ts['t'])
+        v = np.array(ts['v'])
+
+        start_dt = dt.datetime.fromtimestamp(float(start))
+
+        # TODO - move this! - maybe
+        v = bandpass(data=v, freqmin=lp, freqmax=hp, df=50)
+
+        p = Paa(t, v, interval)
+        s = Sax(p, alphabet)
+        return s.string
+
     def _get(self, metric, **kwargs):
         url = "http://{}:{}/{}".format(*self.tsdbapi, metric)
         r = requests.get(url, params=kwargs)

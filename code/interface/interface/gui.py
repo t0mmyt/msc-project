@@ -142,10 +142,15 @@ class GUI(object):
                     channel=form['channel'],
                     start=start.timestamp(),
                     end=end.timestamp(),
-                    interval=int(form['paa_int']),
+                    interval=form['paa_int'],
                     alphabet=form['alphabet'],
                 )
-                content = "<img width=\"100%\" src=\"/render_sax?{}\">".format(urlencode(qry_params))
+                # content = "<img width=\"100%\" src=\"/render_sax?{}\">".format(urlencode(qry_params))
+                content = """<a href='/saxstr?{0}'>
+                    <img width=\"100%\" src=\"/render_sax?{0}\">
+                    </a>""".format(
+                    urlencode(qry_params))
+
         nav = NavBar('nav_container.html.j2', self.menu)
         body_tmpl = env.get_template('sax.html.j2')
         return self.tmpl.render(
@@ -167,6 +172,12 @@ class GUI(object):
     @cp.expose
     def render_sax(self, **params):
         ct, c = self.render_pass('sax', **params)
+        cp.response.headers['Content-Type'] = ct
+        return c
+
+    @cp.expose
+    def saxstr(self, **params):
+        ct, c = self.render_pass('saxstr', **params)
         cp.response.headers['Content-Type'] = ct
         return c
 
