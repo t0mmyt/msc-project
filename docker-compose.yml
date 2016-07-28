@@ -2,9 +2,19 @@
 version: "2"
 
 services:
+    #  opentsdb:
+    #    container_name: opentsdb
+    #    image: petergrace/opentsdb-docker
+    #    environment:
+    #     - TSD_CONF_tsd__core__auto_create_metrics=True
+    #     - TSD_CONF_tsd__network__port=4242
+    #    ports:
+    #     - 4242:4242
+    #     - 2181:2181
   opentsdb:
     container_name: opentsdb
-    image: petergrace/opentsdb-docker
+    build: docker/opentsdb
+    image: t0mmyt/opentsdb
     environment:
      - TSD_CONF_tsd__core__auto_create_metrics=True
      - TSD_CONF_tsd__network__port=4242
