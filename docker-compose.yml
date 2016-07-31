@@ -33,10 +33,10 @@ services:
       - ./code:/opt/code
     ports:
       - 8001:8001
-  tsdbapi:
-    container_name: tsdbapi
-    build: docker/tsdbapi
-    image: t0mmyt/tsdbapi
+  tsdatastore:
+    container_name: tsdatastore
+    build: docker/tsdatastore
+    image: t0mmyt/tsdatastore
     environment:
 #      - OPENTSDB=172.16.1.90
       - OPENTSDB=opentsdb
@@ -50,7 +50,7 @@ services:
     build: docker/render
     image: t0mmyt/render
     environment:
-      - TSDBAPI_HOST=tsdbapi
+      - TSDBAPI_HOST=tsdatastore
       - TSDBAPI_PORT=8010
     volumes:
       - ./code:/opt/code
@@ -60,6 +60,10 @@ services:
     container_name: interface
     build: docker/interface
     image: t0mmyt/interface
+    environment:
+      - RENDER=render:8002
+      - OBSERVATION=observation:8001
+      - TSDBAPI=tsdatastore:8010
     volumes:
       - ./code:/opt/code
     ports:
