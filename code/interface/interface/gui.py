@@ -21,6 +21,7 @@ class NavBar(object):
 
 
 class GUI(object):
+    channels = ['Z', 'N', 'E']
     menu = [
         ('Import', "/importer" ),
         ('Explore', "/explore"),
@@ -46,6 +47,7 @@ class GUI(object):
                 for f in files:
                     data = f.file.read()
                     r = requests.post(
+                        # TODO - this should be dynamic
                         "http://observation:8001",
                         headers={'Content-Type': "application/octet"},
                         data=data
@@ -106,6 +108,8 @@ class GUI(object):
             navbar=nav.render(active='Explore'),
             body=body_tmpl.render(
                 form=form,
+                form_json=json.dumps(form),
+                channels=self.channels,
                 content=content,
                 error=json.dumps(error, indent=2) if len(error) > 0 else None,
             )
@@ -157,6 +161,8 @@ class GUI(object):
             navbar=nav.render(active='SAX'),
             body=body_tmpl.render(
                 form=form,
+                form_json=json.dumps(form),
+                channels=self.channels,
                 content=content,
                 error=json.dumps(error, indent=2) if len(error) > 0 else None,
             )
