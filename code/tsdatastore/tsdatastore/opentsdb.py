@@ -1,6 +1,7 @@
 import math
 import requests
 import numpy as np
+import json
 
 requests.adapters.DEFAULT_RETRIES = 5
 
@@ -141,4 +142,9 @@ class OpenTSDB(object):
             "http://{}:{}/api/search/lookup".format(self.host, self.port),
             json=query
         )
-        return(r.json())
+        results = r.json()
+        response = {metric: []}
+        if 'results' in results:
+            for result in results['results']:
+                response[metric].append(result['tags'].copy())
+        return(response)

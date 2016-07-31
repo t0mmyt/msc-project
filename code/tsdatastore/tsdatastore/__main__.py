@@ -23,5 +23,6 @@ cp.tree.mount(TSDBList(tsdb), '/list')
 
 cp.server.socket_host = LISTEN_HOST
 cp.server.socket_port = LISTEN_PORT
+cp.engine.timeout_monitor.unsubscribe()
 cp.engine.start()
 cp.engine.block()

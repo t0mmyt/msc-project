@@ -16,5 +16,6 @@ tsdb = OpenTSDB(OPENTSDB)
 cp.tree.mount(ObservationLoader(tsdb=tsdb), '/')
 cp.server.socket_host = "0.0.0.0"
 cp.server.socket_port = 8001
+cp.engine.timeout_monitor.unsubscribe()
 cp.engine.start()
 cp.engine.block()
