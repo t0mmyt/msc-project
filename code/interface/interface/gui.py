@@ -26,6 +26,7 @@ class GUI(object):
         ('Import', "/importer" ),
         ('Explore', "/explore"),
         ('SAX', "/sax"),
+        ('Suffix Tree', '/suffix'),
     ]
     tmpl = env.get_template('index.html.j2')
 

@@ -13,12 +13,11 @@
 
     <div class="container">
       <div class="starter-template">
+        <div class="formgroup row col-md-2">
         <form class="form-inline form-horizontal" id="explore" method="GET">
-        <div class="formgroup row">
-
-          <div class="col-md-2">
+          <div>
             <fieldset class="form-group">
-                <label for="channel">Channel</label>
+                <label for="channel">Channel</label><br>
                 <select class="form-control" id="channel" name="channel" style="width: 8em;" size=3 onchange="chChange()">
                 {% for channel in channels -%}
                 {% if form.channel == channel -%}
@@ -29,31 +28,28 @@
                 {% endfor -%}
                 </select>
             </fieldset>
-          </div><!-- /col -->
-
-          <div class="col-md-2">
+          <div>
+          </div>
             <fieldset class="form-group">
-                <label for="network">Network</label>
+                <label for="network">Network</label><br>
                 <select class="form-control" id="network" name=network style="width: 8em;" size=3 onchange="netChange()">
                 </select>
             </fieldset>
-          </div><!-- /col -->
-
-          <div class="col-md-2">
+          <div>
+          </div>
             <fieldset class="form-group">
-                <label for="station">Station</label>
+                <label for="station">Station</label><br>
                 <select class="form-control" id="station" name="station" style="width: 8em;" size=3>
                 </select>
             </fieldset>
-          </div><!-- /col -->
-
-          <div class="col-md-2" style="text-align: right">
+          <div>
+          </div>
             <fieldset class="form-group">
-              <label for="startD">Start Date</label>
+              <label for="startD">Start Date</label><br>
               <input type="text" id="startD" name="startD" placeholder="YYYY/MM/DD" value="{{ form.startD }}" style="width:8em;"><br>
-              <label for="endD">End Date</label>
+              <label for="endD">End Date</label><br>
               <input type="text" id="endD" name="endD" placeholder="YYYY/MM/DD" value="{{ form.endD }}" style="width:8em;">
-            </fieldset>
+            </fieldset><br>
             <a href="#" id="CopyDate">Copy Date</a>
             <script>
             $('#CopyDate').click(function(e){
@@ -61,15 +57,14 @@
               $('#endD').val($('#startD').val())
             })
             </script>
-          </div><!-- /col -->
-
-          <div class="col-md-2" style="text-align: right">
+          <div>
+          </div>
             <fieldset class="form-group">
-              <label for="startT">Start Time</label>
+              <label for="startT">Start Time</label><br>
               <input type="text" id="startT" name="startT" placeholder="HH:MM:SS" style="width:8em;" value="{{ form.startT }}"><br>
-              <label for="endT">End Time</label>
+              <label for="endT">End Time</label><br>
               <input type="text" id="endT" name="endT" placeholder="HH:MM:SS" value="{{ form.endT }}" style="width:8em;">
-            </fieldset>
+            </fieldset><br>
             <a href="#" id="CopyTime">Copy Time</a>
             <script>
             $('#CopyTime').click(function(e){
@@ -77,16 +72,22 @@
               $('#endT').val($('#startT').val())
             })
             </script>
-          </div><!-- /col -->
-
-          <div class="col-md-2">
+          <div>
+          </div>
             <fieldset class="form-group">
-              <input type="submit" id="submit" value="Submit" style="width: 20em;">
+              <input type="submit" id="submit" value="Submit" style="width: 8em;">
             </fieldset>
-          </div><!-- /col -->
-
-        </div><!-- /row -->
-      </form>
+          </div>
+          </form>
+        </div><!-- /col -->
+        {% if content -%}
+        <div class="col-md-10">
+          <div class="starter-template">
+            {{ content }}
+          </div>
+        </div>
+        {% endif %}
+      </div><!-- /container -->
     </div><!-- /starter-template -->
 
     {% if error -%}
@@ -95,14 +96,7 @@
     </div>
     {% endif %}
 
-    {% if content -%}
-    <div>
-      <div class="starter-template">
-        {{ content }}
-      </div>
-    </div>
-    {% endif %}
-  </div><!-- /container -->
+
 
 <script>
 var $net_el = $('#network');
