@@ -2,15 +2,6 @@
 version: "2"
 
 services:
-    #  opentsdb:
-    #    container_name: opentsdb
-    #    image: petergrace/opentsdb-docker
-    #    environment:
-    #     - TSD_CONF_tsd__core__auto_create_metrics=True
-    #     - TSD_CONF_tsd__network__port=4242
-    #    ports:
-    #     - 4242:4242
-    #     - 2181:2181
   opentsdb:
     container_name: opentsdb
     build: docker/opentsdb
@@ -19,8 +10,8 @@ services:
      - TSD_CONF_tsd__core__auto_create_metrics=True
      - TSD_CONF_tsd__network__port=4242
     ports:
-     - 4242:4242
-     - 2181:2181
+     - 127.0.0.1:4242:4242
+     - 127.0.0.1:2181:2181
   observation:
     container_name: observation
     build: docker/obs
@@ -32,7 +23,7 @@ services:
     volumes:
       - ./code:/opt/code
     ports:
-      - 8001:8001
+      - 127.0.0.1:8001:8001
   tsdatastore:
     container_name: tsdatastore
     build: docker/tsdatastore
@@ -44,7 +35,7 @@ services:
     volumes:
       - ./code:/opt/code
     ports:
-      - 8010:8010
+      - 127.0.0.1:8010:8010
   render:
     container_name: render
     build: docker/render
@@ -55,7 +46,7 @@ services:
     volumes:
       - ./code:/opt/code
     ports:
-      - 8002:8002
+      - 127.0.0.1:8002:8002
   interface:
     container_name: interface
     build: docker/interface
@@ -67,4 +58,4 @@ services:
     volumes:
       - ./code:/opt/code
     ports:
-      - 8000:8000
+      - 127.0.0.1:8080:8000
