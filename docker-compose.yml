@@ -6,6 +6,9 @@ services:
     container_name: opentsdb
     build: docker/opentsdb
     image: t0mmyt/opentsdb
+    volumes:
+     - ./data/hbase:/data/hbase
+     - ./data/hbase_tmp:/tmp
     environment:
      - TSD_CONF_tsd__core__auto_create_metrics=True
      - TSD_CONF_tsd__network__port=4242

@@ -1,5 +1,7 @@
 .idea
 msc_act_project-instructions.pdf
+data/hbase
+data/hbase_tmp
 # Distribution / packaging
 .Python
 env/
