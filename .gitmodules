@@ -1,0 +1,3 @@
+[submodule "code/suffix"]
+	path = code/suffix
+	url = git@github.com:log2nltd/suffix
