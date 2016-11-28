@@ -7,7 +7,7 @@ from io import BytesIO
 from urllib.parse import urlencode
 
 # TODO pass as __init__
-env = Environment(loader=FileSystemLoader('/opt/code/interface/templates'))
+env = Environment(loader=FileSystemLoader('/usr/local/interface/templates'))
 
 
 class NavBar(object):
@@ -169,6 +169,16 @@ class GUI(object):
             )
         )
 
+    @cp.expose
+    def suffix(self, **params):
+        content = None
+        nav = NavBar('nav_container.html.j2', self.menu)
+        body_tmpl = env.get_template('suffix.html.j2')
+        return self.tmpl.render(
+            navbar=nav.render(active='suffix'),
+            body=body_tmpl.render(
+            )
+        )
 
     @cp.expose
     def render_raw(self, **params):

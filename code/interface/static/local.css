@@ -1,0 +1,19 @@
+textarea
+{
+  width:100%;
+}
+.textwrapper
+{
+  border:0px;
+  margin:5px 0;
+  padding:3px;
+}
+#exTab3 .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+
+#exTab3 .tab-content {
+  color : white;
+  background-color: #428bca;
+  padding : 5px 15px;
+}
